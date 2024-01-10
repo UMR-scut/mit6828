@@ -47,12 +47,14 @@ SECTIONS
 		*(.data)
 	}
 
+
 	.bss : {
 		PROVIDE(edata = .);
 		*(.bss)
 		PROVIDE(end = .);
 		BYTE(0)
 	}
+
 
 
 	/DISCARD/ : {

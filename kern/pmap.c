@@ -103,18 +103,17 @@ boot_alloc(uint32_t n)
 	// to a multiple of PGSIZE.
 	//
 	// LAB 2: Your code here.
-	if(n==0)
-	   return nextfree;
+	if(n==0) return nextfree;
 	   
-        result = nextfree;
-        nextfree=ROUNDUP((char *)(nextfree + n),PGSIZE);
+    result = nextfree;
+    nextfree=ROUNDUP((char *)(nextfree + n),PGSIZE);
         
-        if(nextfree>(char *)0xf0400000)
-        {
-            panic("boot_alloc: out of memory, nothing changed, returning NULL...\n");
-	        nextfree = result;    // reset static data
-	        return NULL;
-        }
+    if(nextfree>(char *)0xf0400000)
+    {
+        panic("boot_alloc: out of memory, nothing changed, returning NULL...\n");
+	    nextfree = result;    // reset static data
+	    return NULL;
+    }
         
 	return result;
 }
@@ -163,10 +162,12 @@ mem_init(void)
 	// Your code goes here:
     pages = (struct PageInfo *) boot_alloc(npages * sizeof(struct PageInfo));
     memset(pages,0,npages * sizeof(struct PageInfo));
-
+    
 	//////////////////////////////////////////////////////////////////////
 	// Make 'envs' point to an array of size 'NENV' of 'struct Env'.
 	// LAB 3: Your code here.
+    envs = (struct Env*)boot_alloc(NENV*sizeof(struct Env));
+	memset(envs,0,NENV*sizeof(struct Env));
 
 	//////////////////////////////////////////////////////////////////////
 	// Now that we've allocated the initial kernel data structures, we set
@@ -198,7 +199,7 @@ mem_init(void)
 	//    - the new image at UENVS  -- kernel R, user R
 	//    - envs itself -- kernel RW, user NONE
 	// LAB 3: Your code here.
-
+    boot_map_region(kern_pgdir, UENVS, PTSIZE, PADDR(envs), PTE_U);
 	//////////////////////////////////////////////////////////////////////
 	// Use the physical memory that 'bootstack' refers to as the kernel
 	// stack.  The kernel stack grows down from virtual address KSTACKTOP.
@@ -560,7 +561,24 @@ int
 user_mem_check(struct Env *env, const void *va, size_t len, int perm)
 {
 	// LAB 3: Your code here.
-
+	char* start= ROUNDDOWN((char *)va,PGSIZE);
+	char* end = ROUNDUP((char *)(va+len),PGSIZE);
+    pte_t * pte=NULL;
+	for(;start<end;start+=PGSIZE)
+	{
+        pte=pgdir_walk(env->env_pgdir,(void *)start,0);
+		if((int)start>ULIM||!pte||((int)(*pte)&perm)!=perm)
+		{ 
+			if(start == ROUNDDOWN((char *)va, PGSIZE)) {
+                    user_mem_check_addr = (uintptr_t)va;
+              }
+              else {
+                      user_mem_check_addr = (uintptr_t)start;
+              }
+			return -E_FAULT;
+		}
+	}
+    
 	return 0;
 }
 

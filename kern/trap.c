@@ -245,8 +245,10 @@ trap_dispatch(struct Trapframe *tf)
 	// LAB 4: Your code here.
 
 
+
 	// Handle keyboard and serial interrupts.
 	// LAB 5: Your code here.
+
 
 
     switch (tf->tf_trapno)

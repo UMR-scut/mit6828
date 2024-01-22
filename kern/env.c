@@ -402,6 +402,7 @@ void
 env_create(uint8_t *binary, enum EnvType type)
 {
 	// LAB 3: Your code here.
+<<<<<<< HEAD
 
 
 
@@ -409,6 +410,8 @@ env_create(uint8_t *binary, enum EnvType type)
 	// LAB 5: Your code here.
 
 
+=======
+>>>>>>> lab4
 	struct Env* e;
 	int rc=env_alloc(&e,0);
 	if(rc!=0) panic("env_create failed: env_alloc failed.\n");

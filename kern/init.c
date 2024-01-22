@@ -57,14 +57,9 @@ i386_init(void)
 
 #else
 	// Touch all you want.
-<<<<<<< HEAD
+
 	ENV_CREATE(user_icode, ENV_TYPE_USER);
-=======
-	//ENV_CREATE(user_primes, ENV_TYPE_USER);
-	//ENV_CREATE(user_yield, ENV_TYPE_USER);
-	//ENV_CREATE(user_yield, ENV_TYPE_USER);
-	//ENV_CREATE(user_yield, ENV_TYPE_USER);
->>>>>>> lab4
+
 #endif // TEST*
 
 	// Should not be necessary - drains keyboard because interrupt has given up.
